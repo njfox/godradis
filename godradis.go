@@ -631,6 +631,8 @@ func (gd *Godradis) GetAllNodes(project *Project) ([]Node, error) {
 	}
 	for i := 0; i < len(nodes); i++ {
 		nodes[i].Project = project
+		nodes[i].setEvidenceNodeReferences()
+		nodes[i].setNoteNodeReferences()
 	}
 	return nodes, nil
 }
@@ -665,6 +667,8 @@ func (gd *Godradis) GetNodeById(project *Project, id int) (Node, error) {
 		return Node{}, err
 	}
 	node.Project = project
+	node.setEvidenceNodeReferences()
+	node.setNoteNodeReferences()
 	return node, nil
 }
 
@@ -767,6 +771,7 @@ func (gd *Godradis) CreateNode(project *Project, label string, typeId int, paren
 		return Node{}, err
 	}
 	newNode.Project = project
+	newNode.setEvidenceNodeReferences()
 	return newNode, nil
 }
 
@@ -1239,6 +1244,7 @@ func (gd *Godradis) CreateEvidenceFromText(node *Node, issue *Issue, content str
 		return Evidence{}, err
 	}
 	newEvidence.Node = node
+	node.addEvidence(newEvidence)
 	return newEvidence, nil
 }
 
@@ -1343,6 +1349,9 @@ func (gd *Godradis) DeleteEvidence(evidence *Evidence) error {
 		return err
 	}
 	if resp.StatusCode == http.StatusOK {
+		if evidence.Node != nil {
+			evidence.Node.deleteEvidence(*evidence)
+		}
 		return nil
 	} else {
 		return errors.New("could not delete evidence")
@@ -1525,6 +1534,7 @@ func (gd *Godradis) CreateNoteFromText(node *Node, text string, categoryId ...in
 		return Note{}, err
 	}
 	newNote.Node = node
+	node.addNote(newNote)
 	return newNote, nil
 }
 
@@ -1631,6 +1641,9 @@ func (gd *Godradis) DeleteNote(note *Note) error {
 		return err
 	}
 	if resp.StatusCode == http.StatusOK {
+		if note.Node != nil {
+			note.Node.deleteNote(*note)
+		}
 		return nil
 	} else {
 		return errors.New("could not delete note")
@@ -1639,7 +1652,10 @@ func (gd *Godradis) DeleteNote(note *Note) error {
 
 // Attachments endpoint
 
-
+/*
+GetAllAttachments takes a reference to an existing Node object and returns a slice of all attachments associated with that
+node.
+ */
 func (gd *Godradis) GetAllAttachments(node *Node) ([]Attachment, error) {
 	resp, err := gd.sendRequestWithProjectId("GET", fmt.Sprintf("nodes/%v/attachments", node.Id), node.Project.Id, nil)
 	if err != nil {
@@ -1665,6 +1681,10 @@ func (gd *Godradis) GetAllAttachments(node *Node) ([]Attachment, error) {
 	return attachments, nil
 }
 
+/*
+GetAttachmentByName takes a reference to an existing Node object and a string filename and returns an Attachment object
+if it is found on the server.
+ */
 func (gd *Godradis) GetAttachmentByName(node *Node, filename string) (Attachment, error) {
 	escapedFilename := url.PathEscape(filename)
 	resp, err := gd.sendRequestWithProjectId("GET", fmt.Sprintf("nodes/%v/attachments/%v", node.Id, escapedFilename), node.Project.Id, nil)
@@ -1689,6 +1709,10 @@ func (gd *Godradis) GetAttachmentByName(node *Node, filename string) (Attachment
 	return attachment, nil
 }
 
+/*
+UploadAttachments takes a reference to an existing Node object and a slice of strings containing filepaths and uploads
+these attachments to the Dradis server. A slice of Attachment objects is returned.
+ */
 func (gd *Godradis) UploadAttachments(node *Node, filePath []string) ([]Attachment, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -1737,6 +1761,10 @@ func (gd *Godradis) UploadAttachments(node *Node, filePath []string) ([]Attachme
 	return attachments, nil
 }
 
+/*
+DeleteAttachment takes a reference to an existing Attachment object and deletes it from the server. The local Attachment
+object reference is set to nil.
+ */
 func (gd *Godradis) DeleteAttachment(attachment *Attachment) error {
 	resp, err := gd.sendRequestWithProjectId("DELETE", fmt.Sprintf("nodes/%v/attachments/%v", attachment.Node.Id, attachment.Filename), attachment.Node.Project.Id, nil)
 	if err != nil {
