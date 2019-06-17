@@ -1420,7 +1420,8 @@ func (gd *Godradis) GetNoteById(node *Node, id int) (Note, error) {
 }
 
 /*
-GetNoteById takes a reference to a Node object and int id and returns the Note instance associated with that id.
+GetNoteByTitle takes a reference to a Note object and string title and returns the first Note instance associated with that
+title.
 
     gd := godradis.Godradis{}
 
