@@ -3,14 +3,14 @@ A full-featured library for accessing the [Dradis REST API](https://dradisframew
 
 ## Getting Started
 ```
-$ go get -u gitlab.com/njfox/godradis/...
+$ go get -u github.com/njfox/godradis/...
 ```
 
 Documentation via godoc will be added when this repository is officially released. In the meantime, you can build the
 documentation locally using `godoc`:
 
 ```
-$ cd ~/go/src/gitlab.com/njfox/godradis && godoc -http=:6060
+$ cd ~/go/src/github.com/njfox/godradis && godoc -http=:6060
 ```
 
 Then browse to localhost:6060 to view the documentation.
