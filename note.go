@@ -26,3 +26,15 @@ func (n *Note) GetField(key string) (string, error) {
 	}
 	return value.(string), nil
 }
+
+func (n *Note) CopyFields() orderedmap.OrderedMap {
+	fields := orderedmap.New()
+	keys := n.Fields.Keys()
+	for _, k := range keys {
+		value, ok := n.Fields.Get(k)
+		if ok {
+			fields.Set(k, value)
+		}
+	}
+	return *fields
+}

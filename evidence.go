@@ -31,3 +31,15 @@ func (e *Evidence) GetField(key string) (string, error) {
 	}
 	return value.(string), nil
 }
+
+func (e *Evidence) CopyFields() orderedmap.OrderedMap {
+	fields := orderedmap.New()
+	keys := e.Fields.Keys()
+	for _, k := range keys {
+		value, ok := e.Fields.Get(k)
+		if ok {
+			fields.Set(k, value)
+		}
+	}
+	return *fields
+}
