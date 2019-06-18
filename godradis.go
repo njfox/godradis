@@ -1261,7 +1261,7 @@ not just the fields that are being modified.
 
     node, _ := gd.GetNodeByLabel(&project, "127.0.0.1")
     evidence, _ := gd.GetEvidenceById(&node, 2)
-    newFields := evidence.fields
+    newFields := evidence.CopyFields()
     newFields.Set("Port", "995/tcp")
     _ := gd.UpdateEvidence(&evidence, newFields)
  */
@@ -1551,7 +1551,7 @@ are being modified.
 
     node, _ := gd.GetNodeByLabel(&project, "127.0.0.1")
     note, _ := gd.GetNoteByTitle(&node, "Nmap Host Info")
-    newFields := note.fields
+    newFields := note.CopyFields()
     newFields.Set("Hostnames", "sub.foo.com")
     _ := gd.UpdateNote(&note, newFields)
  */
