@@ -1,6 +1,8 @@
 # Godradis
 A full-featured library for accessing the [Dradis REST API](https://dradisframework.com/support/guides/rest_api/) from Go programs.
 
+[![Documentation](https://godoc.org/github.com/njfox/godradis?status.svg)](http://godoc.org/github.com/njfox/godradis)
+
 ## Getting Started
 ```
 $ go get -u github.com/njfox/godradis/...
