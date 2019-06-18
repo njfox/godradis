@@ -8,14 +8,17 @@ A full-featured library for accessing the [Dradis REST API](https://dradisframew
 $ go get -u github.com/njfox/godradis/...
 ```
 
-Documentation via godoc will be added when this repository is officially released. In the meantime, you can build the
-documentation locally using `godoc`:
+Then import the library for use in other Go projects. E.g.:
 
+```go
+gd := godradis.Godradis{}
+gd.Configure("https://example.com", "abcdefghijkl", false)
+project, _ := gd.GetProjectByName("Example Network Penetration Test")
+node, _ := gd.GetNodeByLabel(&project, "127.0.0.1")
+for _, evidence := range node.Evidence {
+	fmt.Printf("%v", evidence.GetField(Port))
+}
 ```
-$ cd ~/go/src/github.com/njfox/godradis && godoc -http=:6060
-```
-
-Then browse to localhost:6060 to view the documentation.
 
 ## Limitations
 The following API endpoints have not been implemented yet:
