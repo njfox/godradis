@@ -8,6 +8,7 @@ import (
 )
 
 type Node struct {
+	sync.Mutex
 	Id int `json:"id"`
 	Label string `json:"label"`
 	TypeId int `json:"type_id"`
@@ -18,7 +19,6 @@ type Node struct {
 	Evidence []Evidence `json:"evidence"`
 	Notes []Note `json:"notes"`
 	Project *Project
-	sync.Mutex
 }
 
 func (n *Node) GetEvidenceById(id int) (*Evidence, error) {
