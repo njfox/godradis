@@ -17,6 +17,7 @@ type Node struct {
 	Evidence []Evidence `json:"evidence"`
 	Notes []Note `json:"notes"`
 	Project *Project
+	sync.Mutex
 }
 
 func (n *Node) GetEvidenceById(id int) (*Evidence, error) {
