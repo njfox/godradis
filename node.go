@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"strings"
+	"sync"
 )
 
 type Node struct {
