@@ -73,14 +73,6 @@ func (n *Node) GetNotesByTitle(title string) []*Note {
 	return notes
 }
 
-func (n *Node) Lock() {
-	n.Lock()
-}
-
-func (n *Node) Unlock() {
-	n.Unlock()
-}
-
 func (n *Node) setEvidenceNodeReferences() {
 	for i := range n.Evidence {
 		n.setEvidenceNodeReference(&n.Evidence[i])
