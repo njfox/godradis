@@ -8,7 +8,7 @@ import (
 )
 
 type Node struct {
-	sync.Mutex
+	Mu sync.Mutex
 	Id int `json:"id"`
 	Label string `json:"label"`
 	TypeId int `json:"type_id"`
