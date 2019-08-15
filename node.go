@@ -3,6 +3,7 @@ package godradis
 import (
 	"fmt"
 	"github.com/pkg/errors"
+	"github.com/ryanuber/go-glob"
 	"strings"
 	"sync"
 )
@@ -66,7 +67,7 @@ func (n *Node) GetNoteById(id int) (*Note, error) {
 func (n *Node) GetNotesByTitle(title string) []*Note {
 	var notes []*Note
 	for i, note := range n.Notes {
-		if strings.ToLower(note.Title) == strings.ToLower(title) {
+		if glob.Glob(strings.ToLower(title), strings.ToLower(note.Title)) {
 			notes = append(notes, &n.Notes[i])
 		}
 	}
