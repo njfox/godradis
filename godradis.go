@@ -1776,3 +1776,61 @@ func (gd *Godradis) DeleteAttachment(attachment *Attachment) error {
 		return errors.New("could not delete attachment")
 	}
 }
+
+// IssueLib endpoint
+
+func (gd *Godradis) GetIssueLibrary() ([]IssueLib, error) {
+	resp, err := gd.sendRequest("GET", "addons/issuelib/entries", nil)
+	if err != nil {
+		return []IssueLib{}, err
+	}
+	defer resp.Body.Close()
+	var issueLibs []IssueLib
+	if resp.StatusCode != http.StatusOK {
+		return []IssueLib{}, errors.New("could not get issue library entries")
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return []IssueLib{}, err
+	}
+
+	err = json.Unmarshal(body, &issueLibs)
+	if err != nil {
+		return []IssueLib{}, err
+	}
+	return issueLibs, nil
+}
+
+func (gd *Godradis) GetIssueLibraryById(id int) (IssueLib, error) {
+	resp, err := gd.sendRequest("GET", fmt.Sprintf("addons/issuelib/entries/%v", id), nil)
+	if err != nil {
+		return IssueLib{}, err
+	}
+	defer resp.Body.Close()
+	var issueLib IssueLib
+	if resp.StatusCode != http.StatusOK {
+		return IssueLib{}, errors.New("could not get issue library entry")
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return IssueLib{}, err
+	}
+
+	err = json.Unmarshal(body, &issueLib)
+	if err != nil {
+		return IssueLib{}, err
+	}
+	return issueLib, nil
+}
+
+func (gd *Godradis) DeleteIssueLibraryById(entry IssueLib) error {
+	resp, err := gd.sendRequest("DELETE", fmt.Sprintf("addons/issuelib/entries/%v", entry.Id), nil)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode == http.StatusOK {
+		return nil
+	} else {
+		return errors.New("could not delete issue library entry")
+	}
+}
