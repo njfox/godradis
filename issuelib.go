@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-type IssueLib struct {
+type IssueLibEntry struct {
 	Id int `json:"id"`
 	Title string `json:"title"`
 	Fields orderedmap.OrderedMap `json:"fields"`
@@ -16,11 +16,11 @@ type IssueLib struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
-func (i *IssueLib) SetField(key, value string) {
+func (i *IssueLibEntry) SetField(key, value string) {
 	i.Fields.Set(key, value)
 }
 
-func (i *IssueLib) GetField(key string) (string, error) {
+func (i *IssueLibEntry) GetField(key string) (string, error) {
 	value, ok := i.Fields.Get(key)
 	if !ok {
 		return "", errors.New(fmt.Sprintf("field not found: %v", key))
@@ -28,7 +28,7 @@ func (i *IssueLib) GetField(key string) (string, error) {
 	return value.(string), nil
 }
 
-func (i *IssueLib) CopyFields() orderedmap.OrderedMap {
+func (i *IssueLibEntry) CopyFields() orderedmap.OrderedMap {
 	fields := orderedmap.New()
 	keys := i.Fields.Keys()
 	for _, k := range keys {

@@ -1777,53 +1777,89 @@ func (gd *Godradis) DeleteAttachment(attachment *Attachment) error {
 	}
 }
 
-// IssueLib endpoint
+// IssueLibEntry endpoint
 
-func (gd *Godradis) GetIssueLibrary() ([]IssueLib, error) {
+func (gd *Godradis) GetIssueLibrary() ([]IssueLibEntry, error) {
 	resp, err := gd.sendRequest("GET", "addons/issuelib/entries", nil)
 	if err != nil {
-		return []IssueLib{}, err
+		return []IssueLibEntry{}, err
 	}
 	defer resp.Body.Close()
-	var issueLibs []IssueLib
+	var issueLibs []IssueLibEntry
 	if resp.StatusCode != http.StatusOK {
-		return []IssueLib{}, errors.New("could not get issue library entries")
+		return []IssueLibEntry{}, errors.New("could not get issue library entries")
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return []IssueLib{}, err
+		return []IssueLibEntry{}, err
 	}
 
 	err = json.Unmarshal(body, &issueLibs)
 	if err != nil {
-		return []IssueLib{}, err
+		return []IssueLibEntry{}, err
 	}
 	return issueLibs, nil
 }
 
-func (gd *Godradis) GetIssueLibraryById(id int) (IssueLib, error) {
+func (gd *Godradis) GetIssueLibraryById(id int) (IssueLibEntry, error) {
 	resp, err := gd.sendRequest("GET", fmt.Sprintf("addons/issuelib/entries/%v", id), nil)
 	if err != nil {
-		return IssueLib{}, err
+		return IssueLibEntry{}, err
 	}
 	defer resp.Body.Close()
-	var issueLib IssueLib
+	var issueLib IssueLibEntry
 	if resp.StatusCode != http.StatusOK {
-		return IssueLib{}, errors.New("could not get issue library entry")
+		return IssueLibEntry{}, errors.New("could not get issue library entry")
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return IssueLib{}, err
+		return IssueLibEntry{}, err
 	}
 
 	err = json.Unmarshal(body, &issueLib)
 	if err != nil {
-		return IssueLib{}, err
+		return IssueLibEntry{}, err
 	}
 	return issueLib, nil
 }
 
-func (gd *Godradis) DeleteIssueLibraryById(entry IssueLib) error {
+func (gd *Godradis) CreateIssueLibraryEntryFromText(content string) (IssueLibEntry, error) {
+	// Required so that json.Marshal() sends the fields wrapped in an entry{} json object
+	type entryDetails struct {
+		Content string `json:"content"`
+	}
+	type reqModel struct {
+		EntryDetails entryDetails `json:"entry"`
+	}
+	ed := entryDetails{}
+	ed.Content = content
+
+	jsonBody, err := json.Marshal(&reqModel{ed})
+	if err != nil {
+		return IssueLibEntry{}, err
+	}
+	resp, err := gd.sendRequest("POST", "addons/issuelib/entries", jsonBody)
+	if err != nil {
+		return IssueLibEntry{}, err
+	}
+	defer resp.Body.Close()
+	var newEntry IssueLibEntry
+	if resp.StatusCode != http.StatusCreated {
+		return IssueLibEntry{}, errors.New("could not create issuelib entry")
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return IssueLibEntry{}, err
+	}
+
+	err = json.Unmarshal(body, &newEntry)
+	if err != nil {
+		return IssueLibEntry{}, err
+	}
+	return newEntry, nil
+}
+
+func (gd *Godradis) DeleteIssueLibraryById(entry IssueLibEntry) error {
 	resp, err := gd.sendRequest("DELETE", fmt.Sprintf("addons/issuelib/entries/%v", entry.Id), nil)
 	if err != nil {
 		return err
