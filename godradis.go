@@ -1868,6 +1868,40 @@ func (gd *Godradis) CreateIssueLibraryEntryFromText(content string) (IssueLibEnt
 	return newEntry, nil
 }
 
+func (gd *Godradis) UpdateIssueLibraryEntryFromText(entry *IssueLibEntry, content string) error {
+	// Required so that json.Marshal() sends the fields wrapped in an entry{} json object
+	type entryDetails struct {
+		Content string `json:"content"`
+	}
+	type reqModel struct {
+		EntryDetails entryDetails `json:"entry"`
+	}
+	ed := entryDetails{}
+	ed.Content = content
+	jsonBody, err := json.Marshal(&reqModel{ed})
+	if err != nil {
+		return err
+	}
+	resp, err := gd.sendRequest("PUT", fmt.Sprintf("addons/issuelib/entries/%v", entry.Id), jsonBody)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("could not update issuelib entry")
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(body, &entry)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (gd *Godradis) DeleteIssueLibraryById(entry IssueLibEntry) error {
 	resp, err := gd.sendRequest("DELETE", fmt.Sprintf("addons/issuelib/entries/%v", entry.Id), nil)
 	if err != nil {
