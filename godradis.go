@@ -1823,6 +1823,15 @@ func (gd *Godradis) GetIssueLibraryById(id int) (IssueLibEntry, error) {
 	return issueLib, nil
 }
 
+func (gd *Godradis) CreateIssueLibraryEntry(fields *orderedmap.OrderedMap) (IssueLibEntry, error) {
+	text := parseOrderedMapFields(fields)
+	entry, err := gd.CreateIssueLibraryEntryFromText(text)
+	if err != nil {
+		return IssueLibEntry{}, err
+	}
+	return entry, nil
+}
+
 func (gd *Godradis) CreateIssueLibraryEntryFromText(content string) (IssueLibEntry, error) {
 	// Required so that json.Marshal() sends the fields wrapped in an entry{} json object
 	type entryDetails struct {
