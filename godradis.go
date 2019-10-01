@@ -1868,6 +1868,15 @@ func (gd *Godradis) CreateIssueLibraryEntryFromText(content string) (IssueLibEnt
 	return newEntry, nil
 }
 
+func (gd *Godradis) UpdateIssueLibraryEntry(entry *IssueLibEntry, fields *orderedmap.OrderedMap) error {
+	text := parseOrderedMapFields(fields)
+	err := gd.UpdateIssueLibraryEntryFromText(entry, text)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (gd *Godradis) UpdateIssueLibraryEntryFromText(entry *IssueLibEntry, content string) error {
 	// Required so that json.Marshal() sends the fields wrapped in an entry{} json object
 	type entryDetails struct {
@@ -1894,7 +1903,6 @@ func (gd *Godradis) UpdateIssueLibraryEntryFromText(entry *IssueLibEntry, conten
 	if err != nil {
 		return err
 	}
-
 	err = json.Unmarshal(body, &entry)
 	if err != nil {
 		return err
