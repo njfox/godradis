@@ -23,7 +23,6 @@ for _, evidence := range node.Evidence {
 ## Limitations
 The following API endpoints have not been implemented yet:
 
-* IssueLibrary
 * Document Properties
 * Content Blocks
 
