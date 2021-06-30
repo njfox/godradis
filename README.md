@@ -5,7 +5,7 @@ A full-featured library for accessing the [Dradis REST API](https://dradisframew
 
 ## Getting Started
 ```
-$ go get -u github.com/njfox/godradis/...
+$ go get github.com/njfox/godradis
 ```
 
 Then import the library for use in other Go projects. E.g.:
